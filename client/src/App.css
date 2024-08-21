@@ -1,0 +1,82 @@
+/* Landing Page */
+.landing {
+  position: relative;
+  background: url("./img/showcase.jpg") no-repeat center center/cover;
+  height: 100vh;
+}
+
+.landing-inner {
+  color: #fff;
+  height: 100%;
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.buttons {
+  margin: 0 0.5rem;
+}
+
+/* Overlay */
+.dark-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.landing{
+  height: 100vh;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial, sans-serif';
+  background-color: rgb(0, 0, 41);
+}
+#root {
+  background-color: rgb(0, 0, 41);
+}  
+.blob {
+  width: 300px;
+  height: 300px;
+  margin: 50px;
+  background-image: linear-gradient(45deg, #3023AE 0%, #FF0099 100%);
+  /* box-shadow: 0 0 200px rgba(255, 0, 153, 0.7), 0 0 50px rgba(48, 35, 174, 0.7); */
+  border-radius: 50%;
+  transition: all 1s;
+}
+.blob.animate{
+  animation: morpheus 1s linear infinite alternate;
+}
+.blobBox{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+@keyframes morpheus {
+  0% {
+    border-radius: 100% 100% 100% 100% / 100% 100% 100% 100%;
+  }
+  20% {
+    border-radius: 60% 40% 40% 60% / 60% 25% 75% 40%;
+  }
+  40% {
+    border-radius: 70% 30% 65% 35% / 80% 45% 55% 20%;
+  }
+  60% {
+    border-radius: 30% 70% 70% 30% / 20% 30% 70% 80%;
+  }
+  80% {
+    border-radius: 40% 60% 40% 60% / 70% 55% 45% 30%;
+  }
+  100% {
+    border-radius: 100% 100% 100% 100% / 100% 100% 100% 100%;
+  }
+}
