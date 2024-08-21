@@ -61,7 +61,7 @@ const ChatAgent = () => {
     setError(null);
 
     try {
-      const response = await fetch('https://aiagentserver-yvfifalxwa-ew.a.run.app/graph/stream', {
+      const response = await fetch('https://aiagentserver.detrace.systems/graph/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: { messages: [input] } }),
