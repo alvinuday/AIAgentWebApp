@@ -63,12 +63,14 @@ const ChatAgent = () => {
     try {
       const response = await fetch('https://aiagentserver-yvfifalxwa-em.a.run.app/graph/stream/', {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: { messages: [input] } }),
       });
 
       if (!response.ok) throw new Error('Network response was not ok');
 
+      console.log('Response:', response);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let botResponse = '';
