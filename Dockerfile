@@ -13,4 +13,12 @@ ENV DB_PASSWORD=default
 
 EXPOSE 5000
 
-CMD [ "npm", "run", "build-app" ]
+WORKDIR /app/client
+
+RUN npm install
+
+RUN npm run build
+
+WORKDIR /app
+
+CMD [ "npm", "run", "server" ]
