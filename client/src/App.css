@@ -37,46 +37,149 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Arial, sans-serif';
-  background-color: rgb(0, 0, 41);
+  background-color: #000029;
 }
-#root {
-  background-color: rgb(0, 0, 41);
-}  
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.blob-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
 .blob {
-  width: 300px;
-  height: 300px;
-  margin: 50px;
+  width: 200px;
+  height: 200px;
   background-image: linear-gradient(45deg, #3023AE 0%, #FF0099 100%);
-  /* box-shadow: 0 0 200px rgba(255, 0, 153, 0.7), 0 0 50px rgba(48, 35, 174, 0.7); */
   border-radius: 50%;
   transition: all 1s;
 }
-.blob.animate{
+
+.blob.animate {
   animation: morpheus 1s linear infinite alternate;
 }
-.blobBox{
+
+.blob-label {
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.chat-interface {
+  flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: #ffffff00;
+  border-radius: 1rem 1rem 0 0;
+  overflow: hidden;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
   flex-direction: column;
 }
+
+.message {
+  max-width: 70%;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+}
+
+.error-message {
+  background-color: #ffcccc;
+  color: #cc0000;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+.input-form {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+
+.input-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+}
+
+.input-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  background-color: #075e54;
+  color: white;
+}
+
+.listen-button {
+  background-color: #075e54;
+}
+
+.listen-button.listening {
+  background-color: #cc0000;
+}
+
 @keyframes morpheus {
   0% {
-    border-radius: 100% 100% 100% 100% / 100% 100% 100% 100%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    scale: 1;
   }
-  20% {
-    border-radius: 60% 40% 40% 60% / 60% 25% 75% 40%;
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    scale: 0.6;
   }
-  40% {
-    border-radius: 70% 30% 65% 35% / 80% 45% 55% 20%;
-  }
-  60% {
-    border-radius: 30% 70% 70% 30% / 20% 30% 70% 80%;
-  }
-  80% {
-    border-radius: 40% 60% 40% 60% / 70% 55% 45% 30%;
+  70% {
+    border-radius: 40% 50% 60% 50% / 60% 50% 40% 60%;
   }
   100% {
-    border-radius: 100% 100% 100% 100% / 100% 100% 100% 100%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}
+
+@media (max-width: 768px) {
+  .blob {
+    width: 130px;
+    height: 130px;
+  }
+
+  .input-form {
+    flex-wrap: wrap;
+  }
+
+  .input-form input {
+    flex-basis: 100%;
+  }
+
+  .input-form button {
+    flex: 1;
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const ChatAgent = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([{content: "Hey there, I am Genie. How may I help you today?", type: "bot"}]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,12 +40,23 @@ const ChatAgent = () => {
   const toggleListening = () => {
     if (isListening) {
       recognition.current.stop();
-      setIsAnimating(false); // Start animating the blob
+      setIsAnimating(false);
     } else {
       recognition.current.start();
-      setIsAnimating(true); // Start animating the blob
+      setIsAnimating(true);
     }
     setIsListening(!isListening);
+  };
+
+  const formatResponse = (text) => {
+    // Replace multiple asterisks with appropriate HTML tags
+    let formattedText = text.replace(/\*\*\*\*(.*?)\*\*\*\*/g, '<strong><em>$1</em></strong>');
+    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Replace new line characters with <br> tags
+    formattedText = formattedText.replace(/\n/g, '<br>');
+    
+    return formattedText;
   };
 
   const handleSubmit = async (e) => {
@@ -55,8 +66,8 @@ const ChatAgent = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-    if(isListening==true){
-        toggleListening();
+    if (isListening) {
+      toggleListening();
     }
     setError(null);
 
@@ -66,10 +77,10 @@ const ChatAgent = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: { messages: [input] } }),
       });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-
-      console.log('Response:', response);
+      if (!response.ok) {
+        setIsAnimating(false);
+        throw new Error('Network response was not ok');
+      }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let botResponse = '';
@@ -83,22 +94,29 @@ const ChatAgent = () => {
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
-            const data = JSON.parse(line.slice(6));
-            if (data.chatbot && data.chatbot.messages) {
-              botResponse += data.chatbot.messages[0].content;
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.chatbot && data.chatbot.messages) {
+                botResponse += data.chatbot.messages[0].content;
+              }
+            } catch (parseError) {
+              console.error('Error parsing JSON:', parseError);
+              // Continue processing other lines even if one fails
             }
           }
         }
       }
 
-      setMessages((prev) => [...prev, { content: botResponse, type: 'bot' }]);
-      speakResponse(botResponse);
+      const formattedResponse = formatResponse(botResponse);
+
+      setMessages((prev) => [...prev, { content: formattedResponse, type: 'bot' }]);
+      speakResponse(botResponse.replace(/\*+/g, '')); // Remove all asterisks for speech
     } catch (err) {
       setError('Failed to fetch response. Please try again.');
       console.error('Error:', err);
     } finally {
       setIsLoading(false);
-      setIsAnimating(true); 
+      setIsAnimating(true);
     }
   };
 
@@ -107,102 +125,47 @@ const ChatAgent = () => {
     utterance.voice = speechSynthesis.getVoices().find((voice) => voice.name === 'Google US English') || speechSynthesis.getVoices()[0];
     speechSynthesis.speak(utterance);
     utterance.onend = () => {
-        setIsAnimating(false);
-    }
+      setIsAnimating(false);
+    };
   };
 
   return (
-    <div style={{ display: 'flex', backgroundColor: '#000029', height: '100vh', padding: "5vw" }}>
-      {/* Blob Animation and Label */}
-      <div className="blobBox" style={{ width: '30%', position: 'relative' }}>
-        {/* Blob Animation */}
+    <div className="chat-container">
+      <div className="blob-container">
         <div className={`blob ${isAnimating ? 'animate' : ''}`}></div>
-        <p style={{ textAlign: 'center', color: '#FFFFFF', fontWeight: 'bold', width: '100%' }}>Jarvis</p>
+        <div className="blob-label">Genie AI</div>
       </div>
-
-      {/* Chat Interface */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1rem', color: 'white' }}>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="chat-interface">
+        <div className="messages-container">
           {messages.map((message, index) => (
-            <div
-              key={index}
-              style={{
-                display: 'flex',
-                justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start',
-                marginBottom: '1rem',
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: '70%',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '1rem',
-                  backgroundColor: message.type === 'user' ? '#dcf8c6' : 'white',
-                  color: message.type === 'user' ? 'black' : 'black',
-                }}
-              >
-                <p style={{ margin: 0 }}>{message.content}</p>
-              </div>
+            <div key={index} className={`message ${message.type}`}>
+              <div className='content' dangerouslySetInnerHTML={{ __html: message.content }}></div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
         {error && (
-          <div
-            style={{
-              backgroundColor: '#ffcccc',
-              color: '#cc0000',
-              padding: '0.5rem',
-              marginBottom: '1rem',
-              borderRadius: '0.25rem',
-            }}
-          >
+          <div className="error-message">
             <strong>Error:</strong> {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} style={{ display: 'flex' }}>
+        <form onSubmit={handleSubmit} className="input-form">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message here..."
-            style={{
-              flex: 1,
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '0.25rem',
-              marginRight: '0.5rem',
-            }}
             disabled={isLoading}
           />
-          <button
-            type="submit"
-            style={{
-              backgroundColor: '#075e54',
-              color: 'white',
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.25rem',
-              cursor: 'pointer',
-            }}
-            disabled={isLoading}
-          >
+          <button type="submit" disabled={isLoading}>
             {isLoading ? 'Sending...' : 'Send'}
           </button>
           <button
             type="button"
             onClick={toggleListening}
-            style={{
-              backgroundColor: isListening ? '#cc0000' : '#075e54',
-              color: 'white',
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.25rem',
-              marginLeft: '0.5rem',
-              cursor: 'pointer',
-            }}
+            className={`listen-button ${isListening ? 'listening' : ''}`}
           >
-            {isListening ? 'Stop Listening' : 'Start Listening'}
+            {isListening ? 'Stop' : 'Listen'}
           </button>
         </form>
       </div>

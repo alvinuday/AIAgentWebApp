@@ -6,9 +6,10 @@
   "scripts": {
     "start": "node server",
     "server": "nodemon server",
+    "run-client": "cd client && npm run start",
     "build-client": "NPM_CONFIG_PRODUCTION=false cd client && npm install && npm run build",
     "build-app": "concurrently \"npm run build-client\" \"npm run server\"",
-    "dev": "concurrently \"npm run server\" \"npm run build-client\"",
+    "dev": "concurrently \"npm run server\" \"npm run run-client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "author": "",
